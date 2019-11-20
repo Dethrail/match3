@@ -20,6 +20,11 @@ public class GemDistribution : MonoBehaviour
 
     private List<ColorDistribution> _distributions = new List<ColorDistribution>();
 
+    public List<ColorDistribution> GetDistributions()
+    {
+        return _distributions;
+    }
+
     public float GetTotalWeight()
     {
         return BlueCoef + YellowCoef + RedCoef + PurpleCoef + GreenCoef;
@@ -29,6 +34,7 @@ public class GemDistribution : MonoBehaviour
 
     public void InitializeDistribution(int totalCount)
     {
+        _distributions.Clear();
         float distributionCoef = totalCount / GetTotalWeight();
 
         // calculate hard count
@@ -72,16 +78,16 @@ public class GemDistribution : MonoBehaviour
         _invalidate = false;
     }
 
-    public int GetGemsCountByColor(GemColor color)
-    {
-        if (_invalidate)
-        {
-            Debug.LogError("Need to call SetUpDistribution before use");
-            return 0;
-        }
-
-        return _distributions.First(x => x.Color == color).Count;
-    }
+//    public int GetGemsCountByColor(GemColor color)
+//    {
+//        if (_invalidate)
+//        {
+//            Debug.LogError("Need to call SetUpDistribution before use");
+//            return 0;
+//        }
+//
+//        return _distributions.First(x => x.Color == color).Count;
+//    }
 }
 
 public class ColorDistribution
