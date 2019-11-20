@@ -8,12 +8,23 @@ public class GameField : MonoBehaviour
     public GridLayoutGroup GridLayoutGroup;
     public GemDistribution GemDistribution;
     public BoardControls BoardControls;
+    public Button Regenerate;
 
     public void Awake()
     {
         SetUpBoardSize();
         GenerateMockElementsByDisstribution();
+        Regenerate.onClick.AddListener(OnRegenerateClick);
     }
+
+    private void OnRegenerateClick()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(transform.GetChild(i).gameObject);
+        }
+    }
+
 
     private void SetUpBoardSize()
     {
