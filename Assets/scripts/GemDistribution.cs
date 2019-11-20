@@ -27,7 +27,7 @@ public class GemDistribution : MonoBehaviour
 
     private bool _invalidate = true;
 
-    public void SetUpDistribution(int totalCount)
+    public void InitializeDistribution(int totalCount)
     {
         float distributionCoef = totalCount / GetTotalWeight();
 
