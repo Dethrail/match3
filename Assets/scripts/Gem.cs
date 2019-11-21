@@ -13,6 +13,7 @@ public class Gem : MonoBehaviour
 
 public enum GemColor
 {
+    None = 0,
     Blue = 1,
     Yellow,
     Red,

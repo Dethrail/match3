@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = System.Random;
 
 public class GemDistribution : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class GemDistribution : MonoBehaviour
     public ColorDistribution Green;
 
     private List<ColorDistribution> _distributions = new List<ColorDistribution>();
+    private Random _rnd = new Random(9973);
 
     public List<ColorDistribution> GetDistributions()
     {
@@ -29,8 +31,6 @@ public class GemDistribution : MonoBehaviour
     {
         return BlueCoef + YellowCoef + RedCoef + PurpleCoef + GreenCoef;
     }
-
-    private bool _invalidate = true;
 
     public void InitializeDistribution(int totalCount)
     {
@@ -57,37 +57,44 @@ public class GemDistribution : MonoBehaviour
         foreach (ColorDistribution colorDistribution in _distributions)
         {
             float currentMantissa = colorDistribution.FloatCount - colorDistribution.Count;
-           
+
             mantissa += currentMantissa;
             colorDistribution.FloatCount -= currentMantissa;
-            
+
             if (Mathf.RoundToInt(mantissa) > 0)
             {
                 colorDistribution.FloatCount += mantissa;
                 colorDistribution.Count = Mathf.RoundToInt(colorDistribution.FloatCount);
                 mantissa = colorDistribution.FloatCount - colorDistribution.Count;
             }
-
         }
 
         if (totalCount != _distributions.Sum(x => x.Count))
         {
             Debug.LogError("Problem with distribution rounds and mantisa");
         }
-
-        _invalidate = false;
     }
 
-//    public int GetGemsCountByColor(GemColor color)
-//    {
-//        if (_invalidate)
-//        {
-//            Debug.LogError("Need to call SetUpDistribution before use");
-//            return 0;
-//        }
-//
-//        return _distributions.First(x => x.Color == color).Count;
-//    }
+    public GemColor GetNextColorWithExcludes(GemColor left, GemColor bottom)
+    {
+        var collection = _distributions.Where(x => x.Count > 0 && x.Color != left && x.Color != bottom);
+        collection = collection.Shuffle(_rnd);
+        foreach (ColorDistribution colorDistribution in collection)
+        {
+            colorDistribution.Count--;
+            return colorDistribution.Color;
+        }
+
+        // can't found next item
+        foreach (ColorDistribution colorDistribution in _distributions.Where(x => x.Count > 0))
+        {
+            colorDistribution.Count--;
+            return colorDistribution.Color;
+        }
+
+
+        return GemColor.None;
+    }
 }
 
 public class ColorDistribution
@@ -103,5 +110,29 @@ public class ColorDistribution
         Coef = coef;
         FloatCount = floatCount;
         Count = Mathf.FloorToInt(FloatCount);
+    }
+}
+
+public static class EnumerableExtensions
+{
+    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source, Random rng)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (rng == null) throw new ArgumentNullException("rng");
+
+        return source.ShuffleIterator(rng);
+    }
+
+    private static IEnumerable<T> ShuffleIterator<T>(
+        this IEnumerable<T> source, Random rng)
+    {
+        var buffer = source.ToList();
+        for (int i = 0; i < buffer.Count; i++)
+        {
+            int j = rng.Next(i, buffer.Count);
+            yield return buffer[j];
+
+            buffer[j] = buffer[i];
+        }
     }
 }
