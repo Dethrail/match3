@@ -64,26 +64,60 @@ public class GameField : MonoBehaviour
         {
             for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
             {
-                GemColor left = (x > 0) ? GemColor.None : _colorField[x - 1, y];;
-   
-                GemColor bottom = (y > 0) ? GemColor.None : _colorField[x, y - 1];;
-
+                GemColor left = (x > 0) ? _colorField[x - 1, y] : GemColor.None;
+                GemColor bottom = (y > 0) ? _colorField[x, y - 1] : GemColor.None;
                 _colorField[x, y] = GemDistribution.GetNextColorWithExcludes(left, bottom);
             }
         }
 
-        
-        GemColor lastCell = _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)];
-        while (true)
+        PreventMatchingAfterGeneration();
+    }
+
+    private void PreventMatchingAfterGeneration()
+    {
+        int x = _colorField.GetUpperBound(0);
+        int y = _colorField.GetUpperBound(1);
+
+        GemColor current;
+        GemColor comparable;
+        do
         {
-            
-        }
+            current = _colorField[x, y];
+            comparable = _colorField[--x, y];
+
+//            if (x < 0)
+//            {
+//                x = _colorField.GetUpperBound(0);
+//                y--;
+//            }
+
+            int newX;
+            int newY;
+            do
+            {
+                newX = _rnd.Next(1, _colorField.GetUpperBound(0));
+                newY = _rnd.Next(1, _colorField.GetUpperBound(1));
+            } while (_colorField[newX, newY] == current
+                     || _colorField[newX - 1, newY] == current
+                     || _colorField[newX, newY - 1] == current);
+
+            //            int newX = 0;
+//            int newY = 0;
+//            while (_colorField[newX, newY] == current)
+//            {
+//                break;
+//            }
+            Debug.Log("swap " + x + ":" + y + " <=> " + newX + ":" + newY);
+            Swap(x, y, newX, newY);
+            return;
+        } while (current == comparable);
     }
 
     private void FillBoardWithGems()
     {
         Debug.Log("0:0 = " + _colorField[0, 0] + "   "
-                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1));
+                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1)
+                  + _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)]);
         for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
         {
             for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
