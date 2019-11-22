@@ -45,10 +45,6 @@ public class GemDistribution : MonoBehaviour
         _distributions.Add(Green);
 
         _distributions = _distributions.OrderBy(x => x.Coef).ToList();
-        foreach (ColorDistribution colorDistribution in _distributions)
-        {
-            Debug.Log(colorDistribution.Color + " " + colorDistribution.Count);
-        }
 
         FixRoundIssue(totalCount);
     }
