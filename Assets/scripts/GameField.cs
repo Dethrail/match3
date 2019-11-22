@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using Random = System.Random;
 
 public class GameField : MonoBehaviour
 {
@@ -13,10 +9,6 @@ public class GameField : MonoBehaviour
     public Button Regenerate;
 
     private GemColor[,] _colorField;
-
-    private List<Sequence> _sequences;
-
-    private Random _rnd = new Random();
 
     public void Awake()
     {
@@ -56,7 +48,6 @@ public class GameField : MonoBehaviour
     private void FillLogicBoard()
     {
         int totalCount = BoardControls.Width * BoardControls.Heigh;
-        _sequences = new List<Sequence>();
         GemDistribution.InitializeDistribution(totalCount);
 
         _colorField = new GemColor[BoardControls.Width, BoardControls.Heigh];
@@ -71,121 +62,8 @@ public class GameField : MonoBehaviour
         }
     }
 
-//    private void PreventMatchingAfterGeneration()
-//    {
-////        int x = _colorField.GetUpperBound(0);
-////        int y = _colorField.GetUpperBound(1);
-//
-//        GemColor current;
-//        for (int x = _colorField.GetUpperBound(0); x >= 0; x--)
-//        {
-//            for (int y = _colorField.GetUpperBound(1); y >= 0; y--)
-//            {
-//                current = _colorField[x, y];
-//
-//                GemColor left = (x > 0) ? _colorField[x - 1, y] : GemColor.None;
-//                GemColor bottom = (y > 0) ? _colorField[x, y - 1] : GemColor.None;
-//
-//                if (current == left || current == bottom)
-//                {
-//                    // loocking for swap
-//                    int newX = -1;
-//                    int newY = -1;
-//                    for (int i = 0; i < _colorField.GetUpperBound(0); i++)
-//                    {
-//                        if (newX != -1)
-//                        {
-//                            break;
-//                        }
-//
-//                        for (int j = 0; j < _colorField.GetUpperBound(1); j++)
-//                        {
-//                            if (newY != -1)
-//                            {
-//                                break;
-//                            }
-//
-//                            if ((current == _colorField[i, j]
-//                                 || (i > 0) && current == _colorField[i - 1, j]
-//                                 || (j > 0) && current == _colorField[i, j - 1])
-//                            )
-//                            {
-//                                continue;
-//                            }
-//
-//                            if (left == _colorField[i, j]
-//                                || (i > 0) && left == _colorField[i - 1, j]
-//                                || (j > 0) && left == _colorField[i, j - 1]
-//                            )
-//                            {
-//                                continue;
-//                            }
-//
-//                            if (bottom == _colorField[i, j]
-//                                || (i > 0) && bottom == _colorField[i - 1, j]
-//                                || (j > 0) && bottom == _colorField[i, j - 1]
-//                            )
-//                            {
-//                                continue;
-//                            }
-//
-//                            newX = i;
-//                            newY = j;
-//                        }
-//                    }
-//
-//                    if (newX == -1 || newY == -1)
-//                    {
-//                        x = _colorField.GetUpperBound(0);
-//                        y = _colorField.GetUpperBound(1);
-//                        continue;
-//                    }
-//                    Debug.Log("swap " + x + ":" + y + " <=> " + newX + ":" + newY);
-//                    Swap(x, y, newX, newY);
-//                }
-//            }
-//        }
-//
-////        do
-////        {
-////            current = _colorField[x, y];
-////            comparable = _colorField[x - 1, y];
-////            if (current != comparable)
-////            {
-////                comparable = _colorField[x, y - 1];
-////            }
-////
-////
-////            int newX;
-////            int newY;
-////            do
-////            {
-////                newX = _rnd.Next(1, _colorField.GetUpperBound(0));
-////                newY = _rnd.Next(1, _colorField.GetUpperBound(1));
-////            } while (_colorField[newX, newY] == current
-////                     || _colorField[newX - 1, newY] == current
-////                     || _colorField[newX, newY - 1] == current);
-////
-////            Debug.Log("swap " + x + ":" + y + " <=> " + newX + ":" + newY);
-////            Swap(x, y, newX, newY);
-////            x--;
-////            if (x < 0)
-////            {
-////                x = _colorField.GetUpperBound(0);
-////                y--;
-////            }
-////
-////            //return;
-////        } while (current == comparable);
-//    }
-
     private void FillBoardWithGems()
     {
-//        Debug.Log("0:0 = " + _colorField[0, 0] + "   "
-//                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1)
-//                  + _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)]);
-
-        // Start from left(x) to right and from down(y) to up
         for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
         {
             for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
@@ -200,36 +78,4 @@ public class GameField : MonoBehaviour
             }
         }
     }
-
-    // Bogosort
-    private void Shuffle()
-    {
-        if (_rnd == null)
-        {
-            _rnd = new Random();
-        }
-
-        for (int x1 = 0; x1 <= _colorField.GetUpperBound(0); x1++)
-        {
-            for (int y1 = 0; y1 <= _colorField.GetUpperBound(1); y1++)
-            {
-                int x2 = _rnd.Next(0, _colorField.GetUpperBound(0) - 1);
-                int y2 = _rnd.Next(0, _colorField.GetUpperBound(1) - 1);
-
-                Swap(x1, y1, x2, y2);
-            }
-        }
-    }
-
-    private void Swap(int x1, int y1, int x2, int y2)
-    {
-        GemColor temp = (GemColor) _colorField.GetValue(x1, y1);
-        _colorField.SetValue((GemColor) _colorField.GetValue(x2, y2), x1, y1);
-        _colorField.SetValue(temp, x2, y2);
-    }
-}
-
-public class Sequence
-{
-    public List<Vector2Int> Gems = new List<Vector2Int>();
 }

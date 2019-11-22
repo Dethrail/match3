@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Extensions;
 using UnityEngine;
 using Random = System.Random;
 
@@ -21,11 +20,6 @@ public class GemDistribution : MonoBehaviour
 
     private List<ColorDistribution> _distributions = new List<ColorDistribution>();
     private Random _rnd = new Random(9973);
-
-    public List<ColorDistribution> GetDistributions()
-    {
-        return _distributions;
-    }
 
     public float GetTotalWeight()
     {
@@ -51,7 +45,16 @@ public class GemDistribution : MonoBehaviour
         _distributions.Add(Green);
 
         _distributions = _distributions.OrderBy(x => x.Coef).ToList();
+        foreach (ColorDistribution colorDistribution in _distributions)
+        {
+            Debug.Log(colorDistribution.Color + " " + colorDistribution.Count);
+        }
 
+        FixRoundIssue(totalCount);
+    }
+
+    private void FixRoundIssue(int totalCount)
+    {
         // fix round issue of distribution coefs
         float mantissa = 0;
         foreach (ColorDistribution colorDistribution in _distributions)
@@ -94,51 +97,5 @@ public class GemDistribution : MonoBehaviour
 
 
         return GemColor.None;
-    }
-}
-
-public class ColorDistribution
-{
-    public GemColor Color;
-    public float Coef;
-    public int Count;
-    public float FloatCount;
-
-    public ColorDistribution(GemColor color, float coef, float floatCount)
-    {
-        Color = color;
-        Coef = coef;
-        FloatCount = floatCount;
-        Count = Mathf.FloorToInt(FloatCount);
-    }
-
-    public GemColor Pop()
-    {
-        Count--;
-        return Color;
-    }
-}
-
-public static class EnumerableExtensions
-{
-    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source, Random rng)
-    {
-        if (source == null) throw new ArgumentNullException("source");
-        if (rng == null) throw new ArgumentNullException("rng");
-
-        return source.ShuffleIterator(rng);
-    }
-
-    private static IEnumerable<T> ShuffleIterator<T>(
-        this IEnumerable<T> source, Random rng)
-    {
-        var buffer = source.ToList();
-        for (int i = 0; i < buffer.Count; i++)
-        {
-            int j = rng.Next(i, buffer.Count);
-            yield return buffer[j];
-
-            buffer[j] = buffer[i];
-        }
     }
 }
