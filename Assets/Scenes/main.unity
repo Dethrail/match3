@@ -173,8 +173,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b658a464f5bd4f54afbe259f6892c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Width: 10
-  Heigh: 10
+  Width: 4
+  Heigh: 7
 --- !u!1 &272218528
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,8 +361,8 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
-  m_StartCorner: 0
+  m_ChildAlignment: 6
+  m_StartCorner: 2
   m_StartAxis: 0
   m_CellSize: {x: 128, y: 128}
   m_Spacing: {x: 2, y: 2}
