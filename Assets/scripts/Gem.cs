@@ -9,6 +9,7 @@ public class Gem : MonoBehaviour
     public Image Background;
     public Vector2Int Position;
     public GemColor Color;
+    public Text Text;
 }
 
 public enum GemColor

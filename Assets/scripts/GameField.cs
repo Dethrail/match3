@@ -57,16 +57,23 @@ public class GameField : MonoBehaviour
             {
                 GemColor left = (x > 0) ? _colorField[x - 1, y] : GemColor.None;
                 GemColor bottom = (y > 0) ? _colorField[x, y - 1] : GemColor.None;
+
                 _colorField[x, y] = GemDistribution.GetNextColorWithExcludes(left, bottom);
+//                Debug.Log(x + ":" + y + " " + left + " " + bottom + " = " + _colorField[x, y]);
             }
         }
     }
 
     private void FillBoardWithGems()
     {
-        for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
+//        Debug.Log("0:0 = " + _colorField[0, 0] + "   "
+//                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1)
+//                  + _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)]);
+
+        // Start from left(x) to right and from down(y) to up
+        for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
         {
-            for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
+            for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
             {
                 if (_colorField[x, y] == GemColor.None)
                 {
@@ -74,6 +81,7 @@ public class GameField : MonoBehaviour
                 }
 
                 Gem gem = GemFactory.CreateGem(_colorField[x, y]);
+                //gem.Text.text = x + ":" + y;
                 gem.transform.SetParent(transform, false);
             }
         }
