@@ -69,55 +69,123 @@ public class GameField : MonoBehaviour
                 _colorField[x, y] = GemDistribution.GetNextColorWithExcludes(left, bottom);
             }
         }
-
-        PreventMatchingAfterGeneration();
     }
 
-    private void PreventMatchingAfterGeneration()
-    {
-        int x = _colorField.GetUpperBound(0);
-        int y = _colorField.GetUpperBound(1);
-
-        GemColor current;
-        GemColor comparable;
-        do
-        {
-            current = _colorField[x, y];
-            comparable = _colorField[--x, y];
-
-//            if (x < 0)
+//    private void PreventMatchingAfterGeneration()
+//    {
+////        int x = _colorField.GetUpperBound(0);
+////        int y = _colorField.GetUpperBound(1);
+//
+//        GemColor current;
+//        for (int x = _colorField.GetUpperBound(0); x >= 0; x--)
+//        {
+//            for (int y = _colorField.GetUpperBound(1); y >= 0; y--)
 //            {
-//                x = _colorField.GetUpperBound(0);
-//                y--;
+//                current = _colorField[x, y];
+//
+//                GemColor left = (x > 0) ? _colorField[x - 1, y] : GemColor.None;
+//                GemColor bottom = (y > 0) ? _colorField[x, y - 1] : GemColor.None;
+//
+//                if (current == left || current == bottom)
+//                {
+//                    // loocking for swap
+//                    int newX = -1;
+//                    int newY = -1;
+//                    for (int i = 0; i < _colorField.GetUpperBound(0); i++)
+//                    {
+//                        if (newX != -1)
+//                        {
+//                            break;
+//                        }
+//
+//                        for (int j = 0; j < _colorField.GetUpperBound(1); j++)
+//                        {
+//                            if (newY != -1)
+//                            {
+//                                break;
+//                            }
+//
+//                            if ((current == _colorField[i, j]
+//                                 || (i > 0) && current == _colorField[i - 1, j]
+//                                 || (j > 0) && current == _colorField[i, j - 1])
+//                            )
+//                            {
+//                                continue;
+//                            }
+//
+//                            if (left == _colorField[i, j]
+//                                || (i > 0) && left == _colorField[i - 1, j]
+//                                || (j > 0) && left == _colorField[i, j - 1]
+//                            )
+//                            {
+//                                continue;
+//                            }
+//
+//                            if (bottom == _colorField[i, j]
+//                                || (i > 0) && bottom == _colorField[i - 1, j]
+//                                || (j > 0) && bottom == _colorField[i, j - 1]
+//                            )
+//                            {
+//                                continue;
+//                            }
+//
+//                            newX = i;
+//                            newY = j;
+//                        }
+//                    }
+//
+//                    if (newX == -1 || newY == -1)
+//                    {
+//                        x = _colorField.GetUpperBound(0);
+//                        y = _colorField.GetUpperBound(1);
+//                        continue;
+//                    }
+//                    Debug.Log("swap " + x + ":" + y + " <=> " + newX + ":" + newY);
+//                    Swap(x, y, newX, newY);
+//                }
 //            }
-
-            int newX;
-            int newY;
-            do
-            {
-                newX = _rnd.Next(1, _colorField.GetUpperBound(0));
-                newY = _rnd.Next(1, _colorField.GetUpperBound(1));
-            } while (_colorField[newX, newY] == current
-                     || _colorField[newX - 1, newY] == current
-                     || _colorField[newX, newY - 1] == current);
-
-            //            int newX = 0;
-//            int newY = 0;
-//            while (_colorField[newX, newY] == current)
-//            {
-//                break;
-//            }
-            Debug.Log("swap " + x + ":" + y + " <=> " + newX + ":" + newY);
-            Swap(x, y, newX, newY);
-            return;
-        } while (current == comparable);
-    }
+//        }
+//
+////        do
+////        {
+////            current = _colorField[x, y];
+////            comparable = _colorField[x - 1, y];
+////            if (current != comparable)
+////            {
+////                comparable = _colorField[x, y - 1];
+////            }
+////
+////
+////            int newX;
+////            int newY;
+////            do
+////            {
+////                newX = _rnd.Next(1, _colorField.GetUpperBound(0));
+////                newY = _rnd.Next(1, _colorField.GetUpperBound(1));
+////            } while (_colorField[newX, newY] == current
+////                     || _colorField[newX - 1, newY] == current
+////                     || _colorField[newX, newY - 1] == current);
+////
+////            Debug.Log("swap " + x + ":" + y + " <=> " + newX + ":" + newY);
+////            Swap(x, y, newX, newY);
+////            x--;
+////            if (x < 0)
+////            {
+////                x = _colorField.GetUpperBound(0);
+////                y--;
+////            }
+////
+////            //return;
+////        } while (current == comparable);
+//    }
 
     private void FillBoardWithGems()
     {
-        Debug.Log("0:0 = " + _colorField[0, 0] + "   "
-                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1)
-                  + _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)]);
+//        Debug.Log("0:0 = " + _colorField[0, 0] + "   "
+//                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1)
+//                  + _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)]);
+
+        // Start from left(x) to right and from down(y) to up
         for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
         {
             for (int y = 0; y <= _colorField.GetUpperBound(1); y++)

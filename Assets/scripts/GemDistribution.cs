@@ -79,17 +79,17 @@ public class GemDistribution : MonoBehaviour
     {
         var collection = _distributions.Where(x => x.Count > 0 && x.Color != left && x.Color != bottom);
         collection = collection.Shuffle(_rnd);
+        collection = collection.OrderByDescending(x => x.Count);
+
         foreach (ColorDistribution colorDistribution in collection)
         {
-            colorDistribution.Count--;
-            return colorDistribution.Color;
+            return colorDistribution.Pop();
         }
 
         // can't found next item
         foreach (ColorDistribution colorDistribution in _distributions.Where(x => x.Count > 0))
         {
-            colorDistribution.Count--;
-            return colorDistribution.Color;
+            return colorDistribution.Pop();
         }
 
 
@@ -110,6 +110,12 @@ public class ColorDistribution
         Coef = coef;
         FloatCount = floatCount;
         Count = Mathf.FloorToInt(FloatCount);
+    }
+
+    public GemColor Pop()
+    {
+        Count--;
+        return Color;
     }
 }
 
