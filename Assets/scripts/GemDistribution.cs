@@ -76,6 +76,7 @@ public class GemDistribution : MonoBehaviour
 
     public GemColor GetNextColorWithExcludes(GemColor left, GemColor bottom)
     {
+        // todo: check for variation of random
         var collection = _distributions.Where(x => x.Count > 0 && x.Color != left && x.Color != bottom);
         collection = collection.Shuffle(_rnd);
         collection = collection.OrderByDescending(x => x.Count);

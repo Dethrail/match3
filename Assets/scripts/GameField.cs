@@ -55,6 +55,7 @@ public class GameField : MonoBehaviour
         {
             for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
             {
+                // todo: check sequence instead of left/bottom
                 GemColor left = (x > 0) ? _colorField[x - 1, y] : GemColor.None;
                 GemColor bottom = (y > 0) ? _colorField[x, y - 1] : GemColor.None;
 
