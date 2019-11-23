@@ -5,7 +5,7 @@ using UnityEngine;
 public class GemFactory : MonoBehaviour
 {
     public List<Gem> GemPrefabs;
-    private static GemFactory _instance;
+    public static GemFactory _instance;
 
     public void Awake()
     {

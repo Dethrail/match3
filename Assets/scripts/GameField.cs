@@ -18,16 +18,11 @@ public class GameField : MonoBehaviour
 
     private void OnRegenerateClick()
     {
-        for (int i = transform.childCount - 1; i >= 0; i--)
-        {
-            Destroy(transform.GetChild(i).gameObject);
-        }
-
         SetUpBoardSize();
     }
 
 
-    private void SetUpBoardSize()
+    public void SetUpBoardSize()
     {
         if (BoardControls.Width <= BoardControls.Heigh)
         {
@@ -45,7 +40,7 @@ public class GameField : MonoBehaviour
     }
 
 
-    private void FillLogicBoard()
+    public void FillLogicBoard()
     {
         int totalCount = BoardControls.Width * BoardControls.Heigh;
         GemDistribution.InitializeDistribution(totalCount);
@@ -65,11 +60,16 @@ public class GameField : MonoBehaviour
         }
     }
 
-    private void FillBoardWithGems()
+    public void FillBoardWithGems()
     {
 //        Debug.Log("0:0 = " + _colorField[0, 0] + "   "
 //                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1)
 //                  + _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)]);
+
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(transform.GetChild(i).gameObject);
+        }
 
         // Start from left(x) to right and from down(y) to up
         for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
@@ -86,5 +86,10 @@ public class GameField : MonoBehaviour
                 gem.transform.SetParent(transform, false);
             }
         }
+    }
+
+    public bool HasValidMove()
+    {
+        return false;
     }
 }
