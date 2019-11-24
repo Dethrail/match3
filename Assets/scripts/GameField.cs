@@ -59,16 +59,17 @@ public class GameField : MonoBehaviour
                 GemColor bottom = GemColor.None;
                 if (x > 0)
                 {
-                    Sequence seq = RunWave(new Sequence(), x, y, _colorField[x - 1, y]);
+                    Sequence seq = RunWave(new Sequence(), x, y, true, true, _colorField[x, y]);
                     if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
                     {
                         left = _colorField[x - 1, y];
+//                        Debug.Log(x + ":" + y);
                     }
                 }
 
                 if (y > 0)
                 {
-                    Sequence seq = RunWave(new Sequence(), x, y, _colorField[x, y - 1]);
+                    Sequence seq = RunWave(new Sequence(), x, y, true, true, _colorField[x, y]);
                     if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
                     {
                         bottom = _colorField[x, y - 1];
@@ -111,7 +112,7 @@ public class GameField : MonoBehaviour
         }
     }
 
-    private Sequence RunWave(Sequence sequence, int x1, int y1, GemColor color)
+    private Sequence RunWave(Sequence sequence, int x1, int y1, bool isHorizontal, bool isVertical, GemColor color)
     {
         for (int x2 = -1; x2 <= 1; x2++)
         {
@@ -133,20 +134,18 @@ public class GameField : MonoBehaviour
                     continue;
                 }
 
-
-                if (y2 == 0 && _colorField[x1 + x2, y1 + y2] == color &&
-                    !sequence.Horizontal.Contains(new Vector2Int(x1 + x2, y1 + y2)))
-                {
-                    sequence.Horizontal.Add(new Vector2Int(x1 + x2, y1 + y2));
-                    sequence = RunWave(sequence, x1 + x2, y1 + y2, color);
-                }
-
-
-                if (x2 == 0 && _colorField[x1 + x2, y1 + y2] == color &&
+                if (isVertical && x2 == 0 && _colorField[x1 + x2, y1 + y2] == color &&
                     !sequence.Vertical.Contains(new Vector2Int(x1 + x2, y1 + y2)))
                 {
                     sequence.Vertical.Add(new Vector2Int(x1 + x2, y1 + y2));
-                    sequence = RunWave(sequence, x1 + x2, y1 + y2, color);
+                    sequence = RunWave(sequence, x1 + x2, y1 + y2, true, false, color);
+                }
+
+                if (isHorizontal && y2 == 0 && _colorField[x1 + x2, y1 + y2] == color &&
+                    !sequence.Horizontal.Contains(new Vector2Int(x1 + x2, y1 + y2)))
+                {
+                    sequence.Horizontal.Add(new Vector2Int(x1 + x2, y1 + y2));
+                    sequence = RunWave(sequence, x1 + x2, y1 + y2, true, false, color);
                 }
             }
         }
@@ -165,9 +164,9 @@ public class GameField : MonoBehaviour
         bool canMoveDown = y > 0;
 
 
-        if (canMoveLeft)
+        if (canMoveLeft && currentColor != _colorField[x - 1, y])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x - 1, y)), x - 1, y,
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x - 1, y)), x - 1, y, true, true,
                 currentColor);
             if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
             {
@@ -177,9 +176,9 @@ public class GameField : MonoBehaviour
             }
         }
 
-        if (canMoveRight)
+        if (canMoveRight && currentColor != _colorField[x + 1, y])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x + 1, y)), x + 1, y,
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x + 1, y)), x + 1, y, true, true,
                 currentColor);
             if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
             {
@@ -189,9 +188,9 @@ public class GameField : MonoBehaviour
             }
         }
 
-        if (canMoveUp)
+        if (canMoveUp && currentColor != _colorField[x, y + 1])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y + 1)), x, y + 1,
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y + 1)), x, y + 1, true, true,
                 currentColor);
             if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
             {
@@ -201,9 +200,9 @@ public class GameField : MonoBehaviour
             }
         }
 
-        if (canMoveDown)
+        if (canMoveDown && currentColor != _colorField[x, y - 1])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y - 1)), x, y - 1,
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y - 1)), x, y - 1, true, true,
                 currentColor);
             if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
             {
