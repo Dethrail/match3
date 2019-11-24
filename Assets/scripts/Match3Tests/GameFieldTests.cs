@@ -42,7 +42,7 @@ namespace Match3Tests
 
             for (int i = 0; i < iterations; i++)
             {
-                field.FillLogicBoard();
+                field.GenerateBoard();
                 if (!field.HasValidMove())
                 {
                     hasOnlyValidBoards = false;

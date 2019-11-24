@@ -40,13 +40,37 @@ public class GameField : MonoBehaviour
             GridLayoutGroup.constraintCount = BoardControls.Heigh;
         }
 
-        FillLogicBoard();
+        GenerateBoard();
+
         FillBoardWithGems();
         MarkBestMove();
     }
 
+    private bool HasAutoMatch()
+    {
+        List<Sequence> sequences = new List<Sequence>();
+        for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
+        {
+            for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
+            {
+                Sequence seq = new Sequence(new Vector2Int(x, y));
+                RunWave(seq, x, y, true, true, _colorField[x, y]);
+                sequences.Add(seq);
+            }
+        }
 
-    public void FillLogicBoard()
+        return sequences.Count(x => x.LongestSequence > 2) != 0;
+    }
+
+    public void GenerateBoard()
+    {
+        do
+        {
+            FillLogicBoard();
+        } while (HasAutoMatch());
+    }
+
+    private void FillLogicBoard()
     {
         int totalCount = BoardControls.Width * BoardControls.Heigh;
         GemDistribution.InitializeDistribution(totalCount);
@@ -62,7 +86,7 @@ public class GameField : MonoBehaviour
                 if (x > 0)
                 {
                     Sequence seq = RunWave(new Sequence(), x - 1, y, true, true, _colorField[x - 1, y]);
-                    if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+                    if (seq.LongestSequence> 1)
                     {
                         left = _colorField[x - 1, y];
                     }
@@ -71,7 +95,7 @@ public class GameField : MonoBehaviour
                 if (y > 0)
                 {
                     Sequence seq = RunWave(new Sequence(), x, y - 1, true, true, _colorField[x, y - 1]);
-                    if (seq.Horizontal.Count > 0 || seq.Vertical.Count > 0)
+                    if (seq.LongestSequence > 0)
                     {
                         bottom = _colorField[x, y - 1];
                     }
@@ -174,6 +198,20 @@ public class GameField : MonoBehaviour
         return sequence;
     }
 
+    private bool CheckForMatch(int x0, int y0, int x1, int y1, GemColor color)
+    {
+        bool hasMatch = false;
+        Sequence sequence = new Sequence(new Vector2Int(x0, y0), new Vector2Int(x1, y1));
+        sequence = RunWave(sequence, x1, y1, true, true, color);
+        if (sequence.LongestSequence > 1)
+        {
+            hasMatch = true;
+            _sequences.Add(sequence);
+        }
+
+        return hasMatch;
+    }
+
     private bool HasMatch(int x, int y)
     {
         bool hasMatch = false;
@@ -187,50 +225,22 @@ public class GameField : MonoBehaviour
 
         if (canMoveLeft && currentColor != _colorField[x - 1, y])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x - 1, y)), x - 1, y, true, true,
-                currentColor);
-            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
-            {
-                hasMatch = true;
-                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
-                _sequences.Add(seq);
-            }
+            hasMatch = CheckForMatch(x, y, x - 1, y, currentColor);
         }
 
         if (canMoveRight && currentColor != _colorField[x + 1, y])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x + 1, y)), x + 1, y, true, true,
-                currentColor);
-            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
-            {
-                hasMatch = true;
-                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
-                _sequences.Add(seq);
-            }
+            hasMatch = CheckForMatch(x, y, x + 1, y, currentColor);
         }
 
         if (canMoveUp && currentColor != _colorField[x, y + 1])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y + 1)), x, y + 1, true, true,
-                currentColor);
-            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
-            {
-                hasMatch = true;
-                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
-                _sequences.Add(seq);
-            }
+            hasMatch = CheckForMatch(x, y, x, y + 1, currentColor);
         }
 
         if (canMoveDown && currentColor != _colorField[x, y - 1])
         {
-            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y - 1)), x, y - 1, true, true,
-                currentColor);
-            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
-            {
-                hasMatch = true;
-                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
-                _sequences.Add(seq);
-            }
+            hasMatch = CheckForMatch(x, y, x, y - 1, currentColor);
         }
 
         _colorField[x, y] = currentColor;
