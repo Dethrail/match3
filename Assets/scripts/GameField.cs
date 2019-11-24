@@ -218,8 +218,8 @@ public class GameField : MonoBehaviour
 
 public class Sequence
 {
-    public Vector2Int InitialPosition { get; private set; }
-    public Vector2Int Move { get; private set; }
+    public Vector2Int InitialPosition { get; }
+    public Vector2Int Move { get; }
     public List<Vector2Int> Vertical = new List<Vector2Int>();
     public List<Vector2Int> Horizontal = new List<Vector2Int>();
     public int LongestSequence;

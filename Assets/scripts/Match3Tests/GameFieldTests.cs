@@ -19,12 +19,14 @@ namespace Match3Tests
         }
 
         [UnityTest]
-        public IEnumerator TestingBoardGeneration()
+        [TestCase(1000, ExpectedResult = null)]
+        public IEnumerator TestingBoardGeneration(int iterations)
         {
             var go = new GameObject("GameBoard");
             GameField field = go.AddComponent<GameField>();
             BoardControls controls = go.AddComponent<BoardControls>();
             GemDistribution distribution = go.AddComponent<GemDistribution>();
+            bool hasOnlyValidBoards = true;
 
             controls.Width = 10;
             controls.Heigh = 10;
@@ -38,12 +40,16 @@ namespace Match3Tests
             field.BoardControls = controls;
             field.GemDistribution = distribution;
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < iterations; i++)
             {
                 field.FillLogicBoard();
-                Assert.IsTrue(field.HasValidMove());
+                if (!field.HasValidMove())
+                {
+                    hasOnlyValidBoards = false;
+                }
             }
 
+            Assert.IsTrue(hasOnlyValidBoards);
             yield return null;
         }
     }
