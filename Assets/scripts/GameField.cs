@@ -63,39 +63,26 @@ public class GameField : MonoBehaviour
                     if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
                     {
                         left = _colorField[x - 1, y];
-                        
                     }
                 }
 
                 if (y > 0)
                 {
                     Sequence seq = RunWave(new Sequence(), x, y - 1, true, true, _colorField[x, y - 1]);
-                    //Debug.Log(x + ":" + y + " " + left + " " + bottom + " new=" + _colorField[x, y - 1] + " == ");
                     if (seq.Horizontal.Count > 0 || seq.Vertical.Count > 0)
                     {
                         bottom = _colorField[x, y - 1];
                     }
                 }
+
                 _colorField[x, y] = GemDistribution.GetNextColorWithExcludes(left, bottom);
-                //Debug.Log(x + ":" + y + " " + left + " " + bottom + " new=" + _colorField[x, y] );
             }
         }
 
-        if (HasValidMove())
-        {
-            //Debug.Log("has move");
-        }
+        // calculate sequences
+        HasValidMove();
 
         _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
-//        foreach (Sequence sequence in _sequences)
-//        {
-//            Debug.Log(sequence.InitialPosition + " " + sequence.Move + " = " + sequence.LongestSequence);
-//        }
-//        Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move + " = " + _sequences[0].LongestSequence);
-//        foreach (Vector2Int i in _sequences[0].Horizontal)
-//        {
-//            Debug.Log(i);
-//        }
     }
 
     public void FillBoardWithGems()
