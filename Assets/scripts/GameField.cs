@@ -73,6 +73,7 @@ public class GameField : MonoBehaviour
                 Debug.LogError("cant create board using this weight");
                 return;
             }
+
             FillLogicBoard();
         } while (HasAutoMatch());
     }
@@ -93,7 +94,7 @@ public class GameField : MonoBehaviour
                 if (x > 0)
                 {
                     Sequence seq = RunWave(new Sequence(), x - 1, y, true, true, _colorField[x - 1, y]);
-                    if (seq.LongestSequence> 1)
+                    if (seq.LongestSequence > 1)
                     {
                         left = _colorField[x - 1, y];
                     }
@@ -102,7 +103,7 @@ public class GameField : MonoBehaviour
                 if (y > 0)
                 {
                     Sequence seq = RunWave(new Sequence(), x, y - 1, true, true, _colorField[x, y - 1]);
-                    if (seq.LongestSequence > 0)
+                    if (seq.LongestSequence > 1)
                     {
                         bottom = _colorField[x, y - 1];
                     }
