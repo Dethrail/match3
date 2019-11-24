@@ -85,8 +85,7 @@ public class GameField : MonoBehaviour
         }
 
         _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
-        Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move + " = " +_sequences[0].LongestSequence);
-        Debug.Log(_sequences.Count);
+        //Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move + " = " + _sequences[0].LongestSequence);
     }
 
     public void FillBoardWithGems()
