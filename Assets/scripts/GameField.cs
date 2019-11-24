@@ -64,8 +64,15 @@ public class GameField : MonoBehaviour
 
     public void GenerateBoard()
     {
+        int i = 0;
         do
         {
+            i++;
+            if (i > 100)
+            {
+                Debug.LogError("cant create board using this weight");
+                return;
+            }
             FillLogicBoard();
         } while (HasAutoMatch());
     }
