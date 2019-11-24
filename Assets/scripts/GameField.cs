@@ -11,6 +11,7 @@ public class GameField : MonoBehaviour
     public Button Regenerate;
 
     private GemColor[,] _colorField;
+    private Gem[,] _gemsField;
 
     private List<Sequence> _sequences;
 
@@ -41,6 +42,7 @@ public class GameField : MonoBehaviour
 
         FillLogicBoard();
         FillBoardWithGems();
+        MarkBestMove();
     }
 
 
@@ -85,8 +87,29 @@ public class GameField : MonoBehaviour
         _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
     }
 
+    public void MarkBestMove()
+    {
+        if (_sequences[0].Horizontal.Count == _sequences[0].LongestSequence)
+        {
+            foreach (Vector2Int vector2Int in _sequences[0].Horizontal)
+            {
+                _gemsField[vector2Int.x, vector2Int.y].Background.color = Color.green;
+            }
+        }
+        else if (_sequences[0].Vertical.Count == _sequences[0].LongestSequence)
+        {
+            foreach (Vector2Int vector2Int in _sequences[0].Vertical)
+            {
+                _gemsField[vector2Int.x, vector2Int.y].Background.color = Color.green;
+            }
+        }
+
+        _gemsField[_sequences[0].InitialPosition.x, _sequences[0].InitialPosition.y].Background.color = Color.green;
+    }
+
     public void FillBoardWithGems()
     {
+        _gemsField = new Gem[BoardControls.Width, BoardControls.Heigh];
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
             Destroy(transform.GetChild(i).gameObject);
@@ -103,7 +126,9 @@ public class GameField : MonoBehaviour
                 }
 
                 Gem gem = GemFactory.CreateGem(_colorField[x, y]);
+                gem.Position = new Vector2Int(x, y);
                 gem.transform.SetParent(transform, false);
+                _gemsField[x, y] = gem;
             }
         }
     }
