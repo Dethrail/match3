@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class GameField : MonoBehaviour
@@ -9,6 +11,8 @@ public class GameField : MonoBehaviour
     public Button Regenerate;
 
     private GemColor[,] _colorField;
+
+    private List<Sequence> _sequences;
 
     public void Awake()
     {
@@ -55,17 +59,18 @@ public class GameField : MonoBehaviour
                 GemColor bottom = (y > 0) ? _colorField[x, y - 1] : GemColor.None;
 
                 _colorField[x, y] = GemDistribution.GetNextColorWithExcludes(left, bottom);
-//                Debug.Log(x + ":" + y + " " + left + " " + bottom + " = " + _colorField[x, y]);
             }
+        }
+
+        if (HasValidMove())
+        {
+            _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
+            //Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move);
         }
     }
 
     public void FillBoardWithGems()
     {
-//        Debug.Log("0:0 = " + _colorField[0, 0] + "   "
-//                  + _colorField.GetUpperBound(0) + ":" + _colorField.GetUpperBound(1)
-//                  + _colorField[_colorField.GetUpperBound(0), _colorField.GetUpperBound(1)]);
-
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
             Destroy(transform.GetChild(i).gameObject);
@@ -82,14 +87,146 @@ public class GameField : MonoBehaviour
                 }
 
                 Gem gem = GemFactory.CreateGem(_colorField[x, y]);
-                //gem.Text.text = x + ":" + y;
                 gem.transform.SetParent(transform, false);
             }
         }
     }
 
+    private Sequence RunWave(Sequence sequence, int x1, int y1, GemColor color)
+    {
+        for (int x2 = -1; x2 <= 1; x2++)
+        {
+            for (int y2 = -1; y2 <= 1; y2++)
+            {
+                // disable diagonal match
+                if (Mathf.Abs(x2) == Mathf.Abs(y2))
+                {
+                    continue;
+                }
+
+                if (x1 + x2 < 0 || x1 + x2 > _colorField.GetUpperBound(0))
+                {
+                    continue;
+                }
+
+                if (y1 + y2 < 0 || y1 + y2 > _colorField.GetUpperBound(1))
+                {
+                    continue;
+                }
+
+
+                if (y2 == 0 && _colorField[x1 + x2, y1 + y2] == color &&
+                    !sequence.Horizontal.Contains(new Vector2Int(x1 + x2, y1 + y2)))
+                {
+                    sequence.Horizontal.Add(new Vector2Int(x1 + x2, y1 + y2));
+                    sequence = RunWave(sequence, x1 + x2, y1 + y2, color);
+                }
+
+
+                if (x2 == 0 && _colorField[x1 + x2, y1 + y2] == color &&
+                    !sequence.Vertical.Contains(new Vector2Int(x1 + x2, y1 + y2)))
+                {
+                    sequence.Vertical.Add(new Vector2Int(x1 + x2, y1 + y2));
+                    sequence = RunWave(sequence, x1 + x2, y1 + y2, color);
+                }
+            }
+        }
+
+        return sequence;
+    }
+
+    private bool HasMatch(int x, int y)
+    {
+        bool hasMatch = false;
+        GemColor currentColor = _colorField[x, y];
+        _colorField[x, y] = GemColor.None;
+        bool canMoveLeft = x > 0;
+        bool canMoveRight = x < _colorField.GetUpperBound(0);
+        bool canMoveUp = y < _colorField.GetUpperBound(1);
+        bool canMoveDown = y > 0;
+        _sequences = new List<Sequence>();
+
+
+        if (canMoveLeft)
+        {
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x - 1, y)), x - 1, y,
+                currentColor);
+            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+            {
+                hasMatch = true;
+                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
+                _sequences.Add(seq);
+            }
+        }
+
+        if (canMoveRight)
+        {
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x + 1, y)), x + 1, y,
+                currentColor);
+            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+            {
+                hasMatch = true;
+                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
+                _sequences.Add(seq);
+            }
+        }
+
+        if (canMoveUp)
+        {
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y + 1)), x, y + 1,
+                currentColor);
+            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+            {
+                hasMatch = true;
+                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
+                _sequences.Add(seq);
+            }
+        }
+
+        if (canMoveDown)
+        {
+            Sequence seq = RunWave(new Sequence(new Vector2Int(x, y), new Vector2Int(x, y - 1)), x, y - 1,
+                currentColor);
+            if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+            {
+                hasMatch = true;
+                seq.LongestSequence = Mathf.Max(seq.Horizontal.Count, seq.Vertical.Count);
+                _sequences.Add(seq);
+            }
+        }
+
+        _colorField[x, y] = currentColor;
+        return hasMatch;
+    }
+
     public bool HasValidMove()
     {
-        return true;
+        for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
+        {
+            for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
+            {
+                if (HasMatch(x, y))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+public class Sequence
+{
+    public Vector2Int InitialPosition { get; private set; }
+    public Vector2Int Move { get; private set; }
+    public List<Vector2Int> Vertical = new List<Vector2Int>();
+    public List<Vector2Int> Horizontal = new List<Vector2Int>();
+    public int LongestSequence;
+
+    public Sequence(Vector2Int position, Vector2Int move)
+    {
+        InitialPosition = position;
+        Move = move;
     }
 }

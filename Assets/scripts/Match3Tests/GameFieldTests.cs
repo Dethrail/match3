@@ -37,17 +37,13 @@ namespace Match3Tests
 
             field.BoardControls = controls;
             field.GemDistribution = distribution;
-   
 
             for (int i = 0; i < 10; i++)
             {
                 field.FillLogicBoard();
-                Debug.Log(field.HasValidMove());
                 Assert.IsTrue(field.HasValidMove());
             }
 
-            //UnityEngine.Assertions.Assert.IsNull(go);
-            Assert.AreEqual("GameBoard", go.name);
             yield return null;
         }
     }
