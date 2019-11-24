@@ -10,6 +10,10 @@ public class Sequence
     public List<Vector2Int> Horizontal = new List<Vector2Int>();
     public int LongestSequence;
 
+    public Sequence()
+    {
+    }
+
     public Sequence(Vector2Int position, Vector2Int move)
     {
         InitialPosition = position;

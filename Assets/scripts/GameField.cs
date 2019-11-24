@@ -54,9 +54,25 @@ public class GameField : MonoBehaviour
         {
             for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
             {
-                // todo: check sequence instead of left/bottom
-                GemColor left = (x > 0) ? _colorField[x - 1, y] : GemColor.None;
-                GemColor bottom = (y > 0) ? _colorField[x, y - 1] : GemColor.None;
+                GemColor left = GemColor.None;
+                GemColor bottom = GemColor.None;
+                if (x > 0)
+                {
+                    Sequence seq = RunWave(new Sequence(), x, y, _colorField[x - 1, y]);
+                    if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+                    {
+                        left = _colorField[x - 1, y];
+                    }
+                }
+
+                if (y > 0)
+                {
+                    Sequence seq = RunWave(new Sequence(), x, y, _colorField[x, y - 1]);
+                    if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+                    {
+                        bottom = _colorField[x, y - 1];
+                    }
+                }
 
                 _colorField[x, y] = GemDistribution.GetNextColorWithExcludes(left, bottom);
             }
