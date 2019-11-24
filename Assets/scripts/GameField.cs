@@ -48,6 +48,7 @@ public class GameField : MonoBehaviour
     {
         int totalCount = BoardControls.Width * BoardControls.Heigh;
         GemDistribution.InitializeDistribution(totalCount);
+        _sequences = new List<Sequence>();
 
         _colorField = new GemColor[BoardControls.Width, BoardControls.Heigh];
         for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
@@ -80,9 +81,12 @@ public class GameField : MonoBehaviour
 
         if (HasValidMove())
         {
-            _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
-            //Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move);
+            Debug.Log("has move");
         }
+
+        _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
+        Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move + " = " +_sequences[0].LongestSequence);
+        Debug.Log(_sequences.Count);
     }
 
     public void FillBoardWithGems()
@@ -160,7 +164,6 @@ public class GameField : MonoBehaviour
         bool canMoveRight = x < _colorField.GetUpperBound(0);
         bool canMoveUp = y < _colorField.GetUpperBound(1);
         bool canMoveDown = y > 0;
-        _sequences = new List<Sequence>();
 
 
         if (canMoveLeft)
@@ -217,17 +220,18 @@ public class GameField : MonoBehaviour
 
     public bool HasValidMove()
     {
+        bool hasMove = false;
         for (int x = 0; x <= _colorField.GetUpperBound(0); x++)
         {
             for (int y = 0; y <= _colorField.GetUpperBound(1); y++)
             {
                 if (HasMatch(x, y))
                 {
-                    return true;
+                    hasMove = true;
                 }
             }
         }
 
-        return false;
+        return hasMove;
     }
 }
