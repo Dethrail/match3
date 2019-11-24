@@ -59,34 +59,43 @@ public class GameField : MonoBehaviour
                 GemColor bottom = GemColor.None;
                 if (x > 0)
                 {
-                    Sequence seq = RunWave(new Sequence(), x, y, true, true, _colorField[x, y]);
+                    Sequence seq = RunWave(new Sequence(), x - 1, y, true, true, _colorField[x - 1, y]);
                     if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
                     {
                         left = _colorField[x - 1, y];
-//                        Debug.Log(x + ":" + y);
+                        
                     }
                 }
 
                 if (y > 0)
                 {
-                    Sequence seq = RunWave(new Sequence(), x, y, true, true, _colorField[x, y]);
-                    if (seq.Horizontal.Count > 1 || seq.Vertical.Count > 1)
+                    Sequence seq = RunWave(new Sequence(), x, y - 1, true, true, _colorField[x, y - 1]);
+                    //Debug.Log(x + ":" + y + " " + left + " " + bottom + " new=" + _colorField[x, y - 1] + " == ");
+                    if (seq.Horizontal.Count > 0 || seq.Vertical.Count > 0)
                     {
                         bottom = _colorField[x, y - 1];
                     }
                 }
-
                 _colorField[x, y] = GemDistribution.GetNextColorWithExcludes(left, bottom);
+                //Debug.Log(x + ":" + y + " " + left + " " + bottom + " new=" + _colorField[x, y] );
             }
         }
 
         if (HasValidMove())
         {
-            Debug.Log("has move");
+            //Debug.Log("has move");
         }
 
         _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
-        //Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move + " = " + _sequences[0].LongestSequence);
+//        foreach (Sequence sequence in _sequences)
+//        {
+//            Debug.Log(sequence.InitialPosition + " " + sequence.Move + " = " + sequence.LongestSequence);
+//        }
+//        Debug.Log(_sequences[0].InitialPosition + " " + _sequences[0].Move + " = " + _sequences[0].LongestSequence);
+//        foreach (Vector2Int i in _sequences[0].Horizontal)
+//        {
+//            Debug.Log(i);
+//        }
     }
 
     public void FillBoardWithGems()
@@ -138,7 +147,7 @@ public class GameField : MonoBehaviour
                     !sequence.Vertical.Contains(new Vector2Int(x1 + x2, y1 + y2)))
                 {
                     sequence.Vertical.Add(new Vector2Int(x1 + x2, y1 + y2));
-                    sequence = RunWave(sequence, x1 + x2, y1 + y2, true, false, color);
+                    sequence = RunWave(sequence, x1 + x2, y1 + y2, false, true, color);
                 }
 
                 if (isHorizontal && y2 == 0 && _colorField[x1 + x2, y1 + y2] == color &&
