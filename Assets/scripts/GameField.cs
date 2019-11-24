@@ -90,6 +90,6 @@ public class GameField : MonoBehaviour
 
     public bool HasValidMove()
     {
-        return false;
+        return true;
     }
 }

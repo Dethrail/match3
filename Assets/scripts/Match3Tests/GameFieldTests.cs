@@ -8,6 +8,16 @@ namespace Match3Tests
 {
     public class GameFieldTests
     {
+        [SetUp]
+        public void Setup()
+        {
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+        }
+
         [UnityTest]
         public IEnumerator TestingBoardGeneration()
         {
@@ -15,7 +25,6 @@ namespace Match3Tests
             GameField field = go.AddComponent<GameField>();
             BoardControls controls = go.AddComponent<BoardControls>();
             GemDistribution distribution = go.AddComponent<GemDistribution>();
-            GridLayoutGroup grid = go.AddComponent<GridLayoutGroup>();
 
             controls.Width = 10;
             controls.Heigh = 10;
@@ -28,7 +37,7 @@ namespace Match3Tests
 
             field.BoardControls = controls;
             field.GemDistribution = distribution;
-            field.GridLayoutGroup = grid;
+   
 
             for (int i = 0; i < 10; i++)
             {
@@ -37,6 +46,7 @@ namespace Match3Tests
                 Assert.IsTrue(field.HasValidMove());
             }
 
+            //UnityEngine.Assertions.Assert.IsNull(go);
             Assert.AreEqual("GameBoard", go.name);
             yield return null;
         }
