@@ -70,12 +70,12 @@ public class GameField : MonoBehaviour
             i++;
             if (i > 100)
             {
-                Debug.LogError("cant create board using this weight");
+                Debug.LogError("cant create board using this weight and board sizes");
                 return;
             }
 
             FillLogicBoard();
-        } while (HasAutoMatch());
+        } while (HasAutoMatch() || !HasValidMove());
     }
 
     private void FillLogicBoard()
@@ -119,24 +119,33 @@ public class GameField : MonoBehaviour
         _sequences = _sequences.OrderByDescending(seq => seq.LongestSequence).ToList();
     }
 
+    private void MarkBestMove(int i, Color color)
+    {
+        _gemsField[_sequences[i].InitialPosition.x, _sequences[i].InitialPosition.y].Background.color = color;
+        if (_sequences[i].Horizontal.Count == _sequences[i].LongestSequence)
+        {
+            foreach (Vector2Int vector2Int in _sequences[i].Horizontal)
+            {
+                _gemsField[vector2Int.x, vector2Int.y].Background.color = color;
+            }
+        }
+        else if (_sequences[i].Vertical.Count == _sequences[i].LongestSequence)
+        {
+            foreach (Vector2Int vector2Int in _sequences[i].Vertical)
+            {
+                _gemsField[vector2Int.x, vector2Int.y].Background.color = color;
+            }
+        }
+    }
+
     public void MarkBestMove()
     {
-        if (_sequences[0].Horizontal.Count == _sequences[0].LongestSequence)
+        if (_sequences.Count > 1)
         {
-            foreach (Vector2Int vector2Int in _sequences[0].Horizontal)
-            {
-                _gemsField[vector2Int.x, vector2Int.y].Background.color = Color.green;
-            }
-        }
-        else if (_sequences[0].Vertical.Count == _sequences[0].LongestSequence)
-        {
-            foreach (Vector2Int vector2Int in _sequences[0].Vertical)
-            {
-                _gemsField[vector2Int.x, vector2Int.y].Background.color = Color.green;
-            }
+            MarkBestMove(1, Color.blue);
         }
 
-        _gemsField[_sequences[0].InitialPosition.x, _sequences[0].InitialPosition.y].Background.color = Color.green;
+        MarkBestMove(0, Color.green);
     }
 
     public void FillBoardWithGems()
